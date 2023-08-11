@@ -1,4 +1,4 @@
-package com.example.reddit.Models;
+package com.example.reddit.models;
 
 public class PostModel {
     UserModel user;
