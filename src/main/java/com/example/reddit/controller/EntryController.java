@@ -1,23 +1,26 @@
 package com.example.reddit.controller;
 
 import com.example.reddit.Exception.PasswordException;
-import com.example.reddit.Exception.UserNameException;
+import com.example.reddit.Exception.UserException;
 import com.example.reddit.model.Login;
+import com.example.reddit.model.User;
 import com.example.reddit.service.LoginService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller("/user")
+@RestController
+@RequestMapping("/user")
 @Log4j2
-public class LoginController {
+public class EntryController {
 
     private final LoginService loginService;
 
     @Autowired
-    public LoginController(LoginService loginService) {
+    public EntryController(LoginService loginService) {
         this.loginService = loginService;
     }
 
@@ -25,9 +28,20 @@ public class LoginController {
     boolean login(@RequestBody Login userLogin) {
         try {
             return loginService.validLogin(userLogin);
-        } catch (UserNameException | PasswordException e) {
+        } catch (UserException | PasswordException e) {
            log.error("Crucial information for user mission {}", e);
            return false;
         }
     }
+
+    @PostMapping("/signup")
+    boolean signup(@RequestBody User user){
+        try {
+            return loginService.signUpUser(user);
+        } catch (UserException e) {
+            log.error("User object is invalid {}", e);
+            return false;
+        }
+    }
+
 }
