@@ -45,6 +45,10 @@ public class LoginService {
         if (Boolean.FALSE.equals(validateUserObject(user))) {
             return false;
         }
+        User userAlreadyExists = userRepository.findByUsername(user.getUsername());
+        if (Objects.nonNull(userAlreadyExists)) {
+            return true;
+        }
 
         User savedUser = userRepository.save(user);
 

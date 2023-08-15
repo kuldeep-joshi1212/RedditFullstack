@@ -7,6 +7,9 @@ import com.example.reddit.model.User;
 import com.example.reddit.service.LoginService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,22 +28,30 @@ public class EntryController {
     }
 
     @PostMapping("/login")
-    boolean login(@RequestBody Login userLogin) {
+    ResponseEntity<HttpStatus> login(@RequestBody Login userLogin) {
         try {
-            return loginService.validLogin(userLogin);
+            boolean isValidLogin = loginService.validLogin(userLogin);
+            if (isValidLogin) {
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (UserException | PasswordException e) {
            log.error("Crucial information for user mission {}", e);
-           return false;
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @PostMapping("/signup")
-    boolean signup(@RequestBody User user){
+    ResponseEntity<HttpStatus> signup(@RequestBody User user){
         try {
-            return loginService.signUpUser(user);
+            boolean isValidSignUp = loginService.signUpUser(user);
+            if (isValidSignUp) {
+                return new ResponseEntity<>(HttpStatus.CREATED);
+            }
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (UserException e) {
             log.error("User object is invalid {}", e);
-            return false;
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
