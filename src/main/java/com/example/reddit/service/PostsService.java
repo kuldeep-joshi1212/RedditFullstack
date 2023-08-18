@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -59,22 +60,52 @@ public class PostsService {
         post.setUser(user);
         return postRepository.save(post);
     }
-    public void upvotePost(Long postId,String username) throws UserException{
+    public void upvotePost(Long postId,String username) throws UserException,PostException{
         User user = userRepository.findByUsername(username);
         if (Objects.isNull(user)) {
             throw new UserException("user not found while upvote");
         }
-        user.getDownvotes().remove(postId);
-        user.getUpvotes().add(postId);
+        Post post = postRepository.findPostByid(postId);
+        if(Objects.isNull(post)){
+            throw new PostException("Post with id: " + postId + " not found.");
+        }
+        long upvotes = 0;
+        long downvotes = 0;
+        if(post.getUpvotes()!=null  ){upvotes = post.getUpvotes();}
+        if(post.getDownvotes()!=null){downvotes = post.getDownvotes();}
+        if(!user.getUpvotes().contains(postId)){
+            post.setUpvotes(upvotes+1);
+            user.getUpvotes().add(postId);
+        }
+        if(user.getDownvotes().contains(postId)) {
+            post.setDownvotes(downvotes-1);
+            user.getDownvotes().remove(postId);
+        }
+        postRepository.save(post);
         userRepository.save(user);
     }
-    public void downvotePost(Long postId,String username) throws UserException{
+    public void downvotePost(Long postId,String username) throws UserException,PostException{
         User user = userRepository.findByUsername(username);
         if (Objects.isNull(user)) {
             throw new UserException("user not found while upvote");
         }
-        user.getUpvotes().remove(postId);
-        user.getDownvotes().add(postId);
+        Post post = postRepository.findPostByid(postId);
+        if(Objects.isNull(post)){
+            throw new PostException("Post with id: " + postId + " not found.");
+        }
+        long upvotes = 0;
+        long downvotes = 0;
+        if(post.getUpvotes()!=null  ){upvotes = post.getUpvotes();}
+        if(post.getDownvotes()!=null){downvotes = post.getDownvotes();}
+        if(user.getUpvotes().contains(postId)){
+            post.setUpvotes(upvotes-1);
+            user.getUpvotes().remove(postId);
+        }
+        if(!user.getDownvotes().contains(postId)) {
+            post.setDownvotes(downvotes+1);
+            user.getDownvotes().add(postId);
+        }
+        postRepository.save(post);
         userRepository.save(user);
     }
 }

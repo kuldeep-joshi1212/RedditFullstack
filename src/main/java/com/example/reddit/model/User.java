@@ -53,8 +53,10 @@ public class User {
 
     private String password;
 
+    @ElementCollection
     private Set<Long> upvotes;
 
+    @ElementCollection
     private Set<Long> downvotes;
 }
 

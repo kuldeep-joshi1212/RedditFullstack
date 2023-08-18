@@ -49,7 +49,7 @@ public class PostController {
             postsService.upvotePost(postId, username);
             return new ResponseEntity<>(HttpStatus.OK);
         }
-        catch (UserException e){
+        catch (UserException | PostException e){
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
     }
@@ -59,7 +59,7 @@ public class PostController {
             postsService.downvotePost(postId, username);
             return new ResponseEntity<>(HttpStatus.OK);
         }
-        catch (UserException e){
+        catch (UserException | PostException e){
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
     }
