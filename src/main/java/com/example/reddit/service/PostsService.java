@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 @Log4j2
@@ -57,5 +58,23 @@ public class PostsService {
         User user = getUser(username);
         post.setUser(user);
         return postRepository.save(post);
+    }
+    public void upvotePost(Long postId,String username) throws UserException{
+        User user = userRepository.findByUsername(username);
+        if (Objects.isNull(user)) {
+            throw new UserException("user not found while upvote");
+        }
+        user.getDownvotes().remove(postId);
+        user.getUpvotes().add(postId);
+        userRepository.save(user);
+    }
+    public void downvotePost(Long postId,String username) throws UserException{
+        User user = userRepository.findByUsername(username);
+        if (Objects.isNull(user)) {
+            throw new UserException("user not found while upvote");
+        }
+        user.getUpvotes().remove(postId);
+        user.getDownvotes().add(postId);
+        userRepository.save(user);
     }
 }
