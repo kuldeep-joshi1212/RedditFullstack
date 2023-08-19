@@ -44,5 +44,6 @@ public class Post {
     private String body;
     private Long upvotes;
     private Long downvotes;
-    private boolean isLiked;
+    private boolean isUpvote;
+    private boolean isDownvote;
 }

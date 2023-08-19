@@ -43,22 +43,12 @@ public class PostController {
             return new ResponseEntity<>(post, HttpStatus.BAD_REQUEST);
         }
     }
-    @PostMapping(value = "/upvote")
-    ResponseEntity upvotePost(@RequestParam("postId") Long postId, @RequestParam("username") String username){
+    @PostMapping(value = "/vote")
+    ResponseEntity upvotePost(@RequestParam("postId") Long postId, @RequestParam("username") String username, @RequestParam("vote")String vote){
         try {
-            postsService.upvotePost(postId, username);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        catch (UserException | PostException e){
-            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-        }
-    }
-    @PostMapping(value = "/downvote")
-    ResponseEntity downvotePost(@RequestParam("postId") Long postId, @RequestParam("username") String username){
-        try {
-            postsService.downvotePost(postId, username);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
+                postsService.voteOnPost(postId,username,vote);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
         catch (UserException | PostException e){
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }

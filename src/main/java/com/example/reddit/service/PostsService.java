@@ -35,12 +35,21 @@ public class PostsService {
         if (Boolean.FALSE.equals(StringUtils.hasText(username))) {
             return List.of();
         }
-
         User user = getUser(username);
-
-        return postRepository.findByUserId(user.getId());
+        List<Post> posts = postRepository.findByUserId(user.getId());
+        return updateIsLikedforPosts(posts,user); // Temporary return value to test isupvote/isdownvote functionality
     }
-
+    List<Post>updateIsLikedforPosts(List<Post> posts,User user){
+        for(Post post : posts){
+            if(user.getUpvotes().contains(post.getId())){
+                post.setUpvote(Boolean.TRUE);
+            }
+            if(user.getDownvotes().contains(post.getId())){
+                post.setDownvote(Boolean.TRUE);
+            }
+        }
+        return posts;
+    }
     private User getUser(String username) throws UserException {
         User user = userRepository.findByUsername(username);
 
@@ -60,7 +69,7 @@ public class PostsService {
         post.setUser(user);
         return postRepository.save(post);
     }
-    public void upvotePost(Long postId,String username) throws UserException,PostException{
+    public void voteOnPost(Long postId,String username, String vote) throws UserException,PostException{
         User user = userRepository.findByUsername(username);
         if (Objects.isNull(user)) {
             throw new UserException("user not found while upvote");
@@ -69,41 +78,37 @@ public class PostsService {
         if(Objects.isNull(post)){
             throw new PostException("Post with id: " + postId + " not found.");
         }
-        long upvotes = 0;
-        long downvotes = 0;
+        if(vote.equals("upvote")){
+            upvotePost(user,post,0L,0L);
+        }
+        if(vote.equals("downvote")){
+            downvotePost(user,post,0L,0L);
+        }
+    }
+    public void upvotePost(User user,Post post, Long upvotes, Long downvotes){
         if(post.getUpvotes()!=null  ){upvotes = post.getUpvotes();}
         if(post.getDownvotes()!=null){downvotes = post.getDownvotes();}
-        if(!user.getUpvotes().contains(postId)){
+        if(!user.getUpvotes().contains(post.getId())){
             post.setUpvotes(upvotes+1);
-            user.getUpvotes().add(postId);
+            user.getUpvotes().add(post.getId());
         }
-        if(user.getDownvotes().contains(postId)) {
+        if(user.getDownvotes().contains(post.getId())) {
             post.setDownvotes(downvotes-1);
-            user.getDownvotes().remove(postId);
+            user.getDownvotes().remove(post.getId());
         }
         postRepository.save(post);
         userRepository.save(user);
     }
-    public void downvotePost(Long postId,String username) throws UserException,PostException{
-        User user = userRepository.findByUsername(username);
-        if (Objects.isNull(user)) {
-            throw new UserException("user not found while upvote");
-        }
-        Post post = postRepository.findPostByid(postId);
-        if(Objects.isNull(post)){
-            throw new PostException("Post with id: " + postId + " not found.");
-        }
-        long upvotes = 0;
-        long downvotes = 0;
+    public void downvotePost(User user,Post post, Long upvotes, Long downvotes){
         if(post.getUpvotes()!=null  ){upvotes = post.getUpvotes();}
         if(post.getDownvotes()!=null){downvotes = post.getDownvotes();}
-        if(user.getUpvotes().contains(postId)){
+        if(user.getUpvotes().contains(post.getId())){
             post.setUpvotes(upvotes-1);
-            user.getUpvotes().remove(postId);
+            user.getUpvotes().remove(post.getId());
         }
-        if(!user.getDownvotes().contains(postId)) {
+        if(!user.getDownvotes().contains(post.getId())) {
             post.setDownvotes(downvotes+1);
-            user.getDownvotes().add(postId);
+            user.getDownvotes().add(post.getId());
         }
         postRepository.save(post);
         userRepository.save(user);
