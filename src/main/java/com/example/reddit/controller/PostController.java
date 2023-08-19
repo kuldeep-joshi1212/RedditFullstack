@@ -44,7 +44,7 @@ public class PostController {
         }
     }
     @PostMapping(value = "/vote")
-    ResponseEntity upvotePost(@RequestParam("postId") Long postId, @RequestParam("username") String username, @RequestParam("vote")String vote){
+    ResponseEntity voteOnPost(@RequestParam("postId") Long postId, @RequestParam("username") String username, @RequestParam("vote")String vote){
         try {
                 postsService.voteOnPost(postId,username,vote);
                 return new ResponseEntity<>(HttpStatus.OK);
