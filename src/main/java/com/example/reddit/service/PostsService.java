@@ -7,6 +7,7 @@ import com.example.reddit.model.User;
 import com.example.reddit.repository.PostRepository;
 import com.example.reddit.repository.UserRepository;
 import lombok.extern.log4j.Log4j2;
+import org.eclipse.jdt.internal.compiler.ast.FalseLiteral;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -57,5 +58,12 @@ public class PostsService {
         User user = getUser(username);
         post.setUser(user);
         return postRepository.save(post);
+    }
+
+    public Post getPostByid(Long id) throws PostException{
+        if(id==null){
+            throw new PostException("invalid post id");
+        }
+        return postRepository.findPostByid(id);
     }
 }
