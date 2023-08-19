@@ -84,6 +84,7 @@ public class PostsService {
         if(vote.equals("downvote")){
             downvotePost(user,post,0L,0L);
         }
+        // Implement removing vote functionality
     }
     public void upvotePost(User user,Post post, Long upvotes, Long downvotes){
         if(post.getUpvotes()!=null  ){upvotes = post.getUpvotes();}
