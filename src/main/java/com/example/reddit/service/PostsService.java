@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Log4j2
@@ -87,11 +84,14 @@ public class PostsService {
         // Implement removing vote functionality
     }
     public void upvotePost(User user,Post post, Long upvotes, Long downvotes){
-        if(post.getUpvotes()!=null  ){upvotes = post.getUpvotes();}
-        if(post.getDownvotes()!=null){downvotes = post.getDownvotes();}
+        if(Objects.nonNull(post.getUpvotes())){upvotes = post.getUpvotes();}
+        if(Objects.nonNull(post.getDownvotes())){downvotes = post.getDownvotes();}
         if(!user.getUpvotes().contains(post.getId())){
             post.setUpvotes(upvotes+1);
             user.getUpvotes().add(post.getId());
+        }else{
+            post.setUpvotes(upvotes-1);
+            user.getUpvotes().remove(post.getId());
         }
         if(user.getDownvotes().contains(post.getId())) {
             post.setDownvotes(downvotes-1);
@@ -101,8 +101,8 @@ public class PostsService {
         userRepository.save(user);
     }
     public void downvotePost(User user,Post post, Long upvotes, Long downvotes){
-        if(post.getUpvotes()!=null  ){upvotes = post.getUpvotes();}
-        if(post.getDownvotes()!=null){downvotes = post.getDownvotes();}
+        if(Objects.nonNull(post.getUpvotes())){upvotes = post.getUpvotes();}
+        if(Objects.nonNull(post.getDownvotes())){downvotes = post.getDownvotes();}
         if(user.getUpvotes().contains(post.getId())){
             post.setUpvotes(upvotes-1);
             user.getUpvotes().remove(post.getId());
@@ -110,6 +110,10 @@ public class PostsService {
         if(!user.getDownvotes().contains(post.getId())) {
             post.setDownvotes(downvotes+1);
             user.getDownvotes().add(post.getId());
+        }
+        else{
+            post.setDownvotes(downvotes-1);
+            user.getDownvotes().remove(post.getId());
         }
         postRepository.save(post);
         userRepository.save(user);
