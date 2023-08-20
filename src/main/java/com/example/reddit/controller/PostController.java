@@ -49,6 +49,7 @@ public class PostController {
         try{
             return new ResponseEntity<>(postsService.getPostByid(id),HttpStatus.OK);
         }catch(PostException e){
+            log.error("invalid post id");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 

@@ -61,7 +61,8 @@ public class PostsService {
     }
 
     public Post getPostByid(Long id) throws PostException{
-        if(id==null){
+        if(id==null
+        || Boolean.FALSE.equals(postRepository.existsById(id))){
             throw new PostException("invalid post id");
         }
         return postRepository.findPostByid(id);
