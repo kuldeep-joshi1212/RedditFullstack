@@ -7,6 +7,7 @@ import com.example.reddit.model.User;
 import com.example.reddit.repository.PostRepository;
 import com.example.reddit.repository.UserRepository;
 import lombok.extern.log4j.Log4j2;
+import org.eclipse.jdt.internal.compiler.ast.FalseLiteral;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -66,6 +67,7 @@ public class PostsService {
         post.setUser(user);
         return postRepository.save(post);
     }
+
     public void voteOnPost(Long postId,String username, String vote) throws UserException,PostException{
         User user = userRepository.findByUsername(username);
         if (Objects.isNull(user)) {
@@ -117,5 +119,14 @@ public class PostsService {
         }
         postRepository.save(post);
         userRepository.save(user);
+    }
+
+    public Post getPostByid(Long id) throws PostException{
+        if(id==null
+        || Boolean.FALSE.equals(postRepository.existsById(id))){
+            throw new PostException("invalid post id");
+        }
+        return postRepository.findPostByid(id);
+
     }
 }
