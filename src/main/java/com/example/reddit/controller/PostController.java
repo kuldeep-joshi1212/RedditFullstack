@@ -4,13 +4,17 @@ import com.example.reddit.Exception.PostException;
 import com.example.reddit.Exception.UserException;
 import com.example.reddit.model.Post;
 import com.example.reddit.service.PostsService;
-import jakarta.websocket.server.PathParam;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -20,6 +24,7 @@ import java.util.List;
 public class PostController {
 
     private final PostsService postsService;
+
     @Autowired
     public PostController(PostsService postsService) {
         this.postsService = postsService;
@@ -46,21 +51,22 @@ public class PostController {
     }
 
     @PostMapping(value = "/vote")
-    ResponseEntity voteOnPost(@RequestParam("postId") Long postId, @RequestParam("username") String username, @RequestParam("vote")String vote){
+    ResponseEntity voteOnPost(@RequestParam("postId") Long postId,
+                              @RequestParam("username") String username,
+                              @RequestParam("vote") String vote) {
         try {
-                postsService.voteOnPost(postId,username,vote);
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-        catch (UserException | PostException e){
+            postsService.voteOnPost(postId, username, vote);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (UserException | PostException e) {
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
     }
 
-    @GetMapping(value="/post",produces=MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Post> getPostByid( @RequestParam("id") Long id){
-        try{
-            return new ResponseEntity<>(postsService.getPostByid(id),HttpStatus.OK);
-        }catch(PostException e){
+    @GetMapping(value = "/post", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<Post> getPostByid(@RequestParam("id") Long id) {
+        try {
+            return new ResponseEntity<>(postsService.getPostByid(id), HttpStatus.OK);
+        } catch (PostException e) {
             log.error("invalid post id");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
