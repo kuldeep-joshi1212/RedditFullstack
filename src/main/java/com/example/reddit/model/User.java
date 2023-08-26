@@ -13,6 +13,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
@@ -51,5 +52,11 @@ public class User {
     private List<Post> posts;
 
     private String password;
+
+    @ElementCollection
+    private Set<Long> upvotes;
+
+    @ElementCollection
+    private Set<Long> downvotes;
 }
 
