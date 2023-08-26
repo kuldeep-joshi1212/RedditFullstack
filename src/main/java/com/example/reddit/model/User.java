@@ -1,14 +1,22 @@
 package com.example.reddit.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -38,7 +46,6 @@ public class User {
     @Version
     private Integer version;
 
-
     private String username;
 
     @Column(nullable = false)
@@ -48,7 +55,7 @@ public class User {
     @Column(name = "verified")
     private Boolean isVerified;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user",  cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> posts;
 
     private String password;
