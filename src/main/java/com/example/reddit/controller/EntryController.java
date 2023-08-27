@@ -19,9 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user")
 @Log4j2
-@CrossOrigin(origins = {"${ANGULAR.url}"})
+//@CrossOrigin(origins = {"${ANGULAR.url}"})
 public class EntryController {
-
     private final LoginService loginService;
 
     @Autowired
