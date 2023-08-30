@@ -2,6 +2,8 @@ package com.example.reddit.service;
 
 import com.example.reddit.Exception.PasswordException;
 import com.example.reddit.Exception.UserException;
+import com.example.reddit.config.passwordConfig.PasswordConfig;
+import com.example.reddit.config.securityConfig.UserAuthProvider;
 import com.example.reddit.model.Login;
 import com.example.reddit.model.User;
 import com.example.reddit.repository.UserRepository;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.nio.CharBuffer;
 import java.util.Objects;
 
 @Service
@@ -17,19 +20,25 @@ import java.util.Objects;
 public class LoginService {
 
     private final UserRepository userRepository;
+    private final PasswordConfig passwordEncoder;
+    private final UserAuthProvider userAuthProvider;
 
     @Autowired
-    public LoginService(UserRepository userRepository) {
+    public LoginService(UserRepository userRepository,
+                        PasswordConfig passwordEncoder,
+                        UserAuthProvider userAuthProvider) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.userAuthProvider = userAuthProvider;
     }
 
     public boolean validLogin(Login userLogin) throws UserException, PasswordException {
         if (Boolean.FALSE.equals(StringUtils.hasText(userLogin.getUsername()))) {
-            throw new UserException("user name not sent for customer");
+            throw new UserException("Username not sent for customer");
         }
 
         if (Boolean.FALSE.equals(StringUtils.hasText(userLogin.getPassword()))) {
-            throw new PasswordException("Pass word not sent for customer");
+            throw new PasswordException("Password not sent for customer");
         }
 
         User user = userRepository.findByUsername(userLogin.getUsername());
@@ -37,8 +46,9 @@ public class LoginService {
         if (Objects.isNull(user)) {
             throw new UserException("user not found");
         }
-
-        return userLogin.getPassword().equals(user.getPassword());
+        user.setToken(userAuthProvider.createToken(user));
+        userRepository.save(user);
+        return passwordEncoder.passwordEncoder().matches(CharBuffer.wrap(userLogin.getPassword()), user.getPassword());
     }
 
     public boolean signUpUser(User user) throws UserException {
@@ -49,7 +59,8 @@ public class LoginService {
         if (Objects.nonNull(userAlreadyExists)) {
             return true;
         }
-
+        user.setToken(userAuthProvider.createToken(user));
+        user.setPassword(passwordEncoder.passwordEncoder().encode(CharBuffer.wrap(user.getPassword())));
         User savedUser = userRepository.save(user);
 
         return user.getEmail().equals(savedUser.getEmail());
