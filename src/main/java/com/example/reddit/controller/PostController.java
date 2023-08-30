@@ -51,12 +51,12 @@ public class PostController {
     }
 
     @PostMapping(value = "/vote")
-    ResponseEntity voteOnPost(@RequestParam("postId") Long postId,
+    ResponseEntity<Post> voteOnPost(@RequestParam("postId") Long postId,
                               @RequestParam("username") String username,
                               @RequestParam("vote") String vote) {
         try {
-            postsService.voteOnPost(postId, username, vote);
-            return new ResponseEntity<>(HttpStatus.OK);
+            Post votedPost = postsService.voteOnPost(postId, username, vote);
+            return ResponseEntity.ok(votedPost);
         } catch (UserException | PostException e) {
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }

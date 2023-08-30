@@ -53,12 +53,12 @@ public class UserAuthProvider {
                 .sign(Algorithm.HMAC256(seceretKey));
     }
 
-    public Authentication validateToken(String token) throws RuntimeException {
+    public Authentication validateToken(String token, String userFromRequest) throws RuntimeException {
         Algorithm algorithm = Algorithm.HMAC256(seceretKey);
         JWTVerifier verfier = JWT.require(algorithm).build();
         DecodedJWT decoded = verfier.verify(token);
         User user = userRepository.findByUsername(decoded.getIssuer());
-        if (Objects.isNull(user) || !user.getToken().equals(token)) {
+        if (Objects.isNull(user) || !user.getUsername().equals(userFromRequest)) {
             throw new RuntimeException("Token does not belong to this User");
         }
         return  new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());

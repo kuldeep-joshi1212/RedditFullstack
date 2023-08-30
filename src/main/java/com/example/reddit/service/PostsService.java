@@ -70,7 +70,7 @@ public class PostsService {
         return postRepository.save(post);
     }
 
-    public void voteOnPost(Long postId, String username, String vote) throws UserException, PostException {
+    public Post voteOnPost(Long postId, String username, String vote) throws UserException, PostException {
         User user = userRepository.findByUsername(username);
         if (Objects.isNull(user)) {
             throw new UserException("user not found while upvote");
@@ -85,7 +85,7 @@ public class PostsService {
         if (vote.equals("downvote")) {
             downvotePost(user, post, 0L, 0L);
         }
-        // Implement removing vote functionality
+        return post;
     }
 
     public void upvotePost(User user, Post post, Long upvotes, Long downvotes) {
