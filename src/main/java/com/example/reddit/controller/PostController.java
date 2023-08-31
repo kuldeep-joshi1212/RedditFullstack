@@ -63,9 +63,9 @@ public class PostController {
     }
 
     @GetMapping(value = "/post", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Post> getPostByid(@RequestParam("id") Long id) {
+    ResponseEntity<Post> getPostByid(@RequestParam("id") Long id, @RequestParam("username") String username) {
         try {
-            return new ResponseEntity<>(postsService.getPostByid(id), HttpStatus.OK);
+            return new ResponseEntity<>(postsService.getPostByid(id, username), HttpStatus.OK);
         } catch (PostException e) {
             log.error("invalid post id");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

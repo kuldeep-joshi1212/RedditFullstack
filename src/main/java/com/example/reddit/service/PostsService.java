@@ -40,14 +40,19 @@ public class PostsService {
 
     List<Post> updateIsLikedforPosts(List<Post> posts, User user) {
         for (Post post : posts) {
-            if (user.getUpvotes().contains(post.getId())) {
-                post.setUpvote(Boolean.TRUE);
-            }
-            if (user.getDownvotes().contains(post.getId())) {
-                post.setDownvote(Boolean.TRUE);
-            }
+            setVotes(post, user);
         }
         return posts;
+    }
+
+    Post setVotes(Post post, User user) {
+        if (user.getUpvotes().contains(post.getId())) {
+            post.setUpvote(Boolean.TRUE);
+        }
+        if (user.getDownvotes().contains(post.getId())) {
+            post.setDownvote(Boolean.TRUE);
+        }
+        return post;
     }
 
     private User getUser(String username) throws UserException {
@@ -85,6 +90,7 @@ public class PostsService {
         if (vote.equals("downvote")) {
             downvotePost(user, post, 0L, 0L);
         }
+        setVotes(post, user);
         return post;
     }
 
@@ -132,12 +138,15 @@ public class PostsService {
         userRepository.save(user);
     }
 
-    public Post getPostByid(Long id) throws PostException {
+    public Post getPostByid(Long id, String username) throws PostException {
         if (id == null
                 || Boolean.FALSE.equals(postRepository.existsById(id))) {
             throw new PostException("invalid post id");
         }
-        return postRepository.findPostByid(id);
+        User user = userRepository.findByUsername(username);
+        Post post = postRepository.findPostByid(id);
+        setVotes(post, user);
+        return post;
 
     }
 }
