@@ -23,7 +23,8 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthFilter(userAuthProvider), BasicAuthenticationFilter.class)
                 .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((requests) ->
-                        requests.requestMatchers(HttpMethod.POST, "/user/login", "/user/signup", "/ping").permitAll()
+                        requests.requestMatchers(HttpMethod.POST, "/user/login", "/user/signup").permitAll()
+                                .requestMatchers(HttpMethod.GET,"/ping").permitAll()
                                 .anyRequest().authenticated()
                 );
         return http.build();
