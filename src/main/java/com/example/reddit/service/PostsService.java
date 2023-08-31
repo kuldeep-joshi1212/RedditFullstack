@@ -35,7 +35,7 @@ public class PostsService {
         }
         User user = getUser(username);
         List<Post> posts = postRepository.findByUserId(user.getId());
-        return updateIsLikedforPosts(posts, user); // Temporary return value to test isupvote/isdownvote functionality
+        return updateIsLikedforPosts(posts, user);
     }
 
     List<Post> updateIsLikedforPosts(List<Post> posts, User user) {
@@ -76,7 +76,7 @@ public class PostsService {
     }
 
     public Post voteOnPost(Long postId, String username, String vote) throws UserException, PostException {
-        User user = userRepository.findByUsername(username);
+        User user = getUser(username);
         if (Objects.isNull(user)) {
             throw new UserException("user not found while upvote");
         }
@@ -138,12 +138,12 @@ public class PostsService {
         userRepository.save(user);
     }
 
-    public Post getPostByid(Long id, String username) throws PostException {
+    public Post getPostByid(Long id, String username) throws PostException, UserException {
         if (id == null
                 || Boolean.FALSE.equals(postRepository.existsById(id))) {
             throw new PostException("invalid post id");
         }
-        User user = userRepository.findByUsername(username);
+        User user = getUser(username);
         Post post = postRepository.findPostByid(id);
         setVotes(post, user);
         return post;

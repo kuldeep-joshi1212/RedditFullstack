@@ -66,7 +66,7 @@ public class PostController {
     ResponseEntity<Post> getPostByid(@RequestParam("id") Long id, @RequestParam("username") String username) {
         try {
             return new ResponseEntity<>(postsService.getPostByid(id, username), HttpStatus.OK);
-        } catch (PostException e) {
+        } catch (PostException | UserException e) {
             log.error("invalid post id");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
