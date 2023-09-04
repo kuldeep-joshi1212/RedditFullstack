@@ -65,5 +65,7 @@ public class User {
 
     @ElementCollection
     private Set<Long> downvotes;
+
+    private String token;
 }
 

@@ -35,19 +35,24 @@ public class PostsService {
         }
         User user = getUser(username);
         List<Post> posts = postRepository.findByUserId(user.getId());
-        return updateIsLikedforPosts(posts, user); // Temporary return value to test isupvote/isdownvote functionality
+        return updateIsLikedforPosts(posts, user);
     }
 
     List<Post> updateIsLikedforPosts(List<Post> posts, User user) {
         for (Post post : posts) {
-            if (user.getUpvotes().contains(post.getId())) {
-                post.setUpvote(Boolean.TRUE);
-            }
-            if (user.getDownvotes().contains(post.getId())) {
-                post.setDownvote(Boolean.TRUE);
-            }
+            setVotes(post, user);
         }
         return posts;
+    }
+
+    Post setVotes(Post post, User user) {
+        if (user.getUpvotes().contains(post.getId())) {
+            post.setUpvote(Boolean.TRUE);
+        }
+        if (user.getDownvotes().contains(post.getId())) {
+            post.setDownvote(Boolean.TRUE);
+        }
+        return post;
     }
 
     private User getUser(String username) throws UserException {
@@ -70,8 +75,8 @@ public class PostsService {
         return postRepository.save(post);
     }
 
-    public void voteOnPost(Long postId, String username, String vote) throws UserException, PostException {
-        User user = userRepository.findByUsername(username);
+    public Post voteOnPost(Long postId, String username, String vote) throws UserException, PostException {
+        User user = getUser(username);
         if (Objects.isNull(user)) {
             throw new UserException("user not found while upvote");
         }
@@ -85,7 +90,8 @@ public class PostsService {
         if (vote.equals("downvote")) {
             downvotePost(user, post, 0L, 0L);
         }
-        // Implement removing vote functionality
+        setVotes(post, user);
+        return post;
     }
 
     public void upvotePost(User user, Post post, Long upvotes, Long downvotes) {
@@ -132,12 +138,15 @@ public class PostsService {
         userRepository.save(user);
     }
 
-    public Post getPostByid(Long id) throws PostException {
+    public Post getPostByid(Long id, String username) throws PostException, UserException {
         if (id == null
                 || Boolean.FALSE.equals(postRepository.existsById(id))) {
             throw new PostException("invalid post id");
         }
-        return postRepository.findPostByid(id);
+        User user = getUser(username);
+        Post post = postRepository.findPostByid(id);
+        setVotes(post, user);
+        return post;
 
     }
 }

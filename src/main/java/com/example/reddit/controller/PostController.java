@@ -51,22 +51,22 @@ public class PostController {
     }
 
     @PostMapping(value = "/vote")
-    ResponseEntity voteOnPost(@RequestParam("postId") Long postId,
+    ResponseEntity<Post> voteOnPost(@RequestParam("postId") Long postId,
                               @RequestParam("username") String username,
                               @RequestParam("vote") String vote) {
         try {
-            postsService.voteOnPost(postId, username, vote);
-            return new ResponseEntity<>(HttpStatus.OK);
+            Post votedPost = postsService.voteOnPost(postId, username, vote);
+            return ResponseEntity.ok(votedPost);
         } catch (UserException | PostException e) {
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
     }
 
     @GetMapping(value = "/post", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Post> getPostByid(@RequestParam("id") Long id) {
+    ResponseEntity<Post> getPostByid(@RequestParam("id") Long id, @RequestParam("username") String username) {
         try {
-            return new ResponseEntity<>(postsService.getPostByid(id), HttpStatus.OK);
-        } catch (PostException e) {
+            return new ResponseEntity<>(postsService.getPostByid(id, username), HttpStatus.OK);
+        } catch (PostException | UserException e) {
             log.error("invalid post id");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

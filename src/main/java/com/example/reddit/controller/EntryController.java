@@ -4,16 +4,18 @@ import com.example.reddit.Exception.PasswordException;
 import com.example.reddit.Exception.UserException;
 import com.example.reddit.model.Login;
 import com.example.reddit.model.User;
+import com.example.reddit.model.dto.UserDTO;
 import com.example.reddit.service.LoginService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Objects;
 
 
 @RestController
@@ -29,11 +31,11 @@ public class EntryController {
     }
 
     @PostMapping("/login")
-    ResponseEntity<HttpStatus> login(@RequestBody Login userLogin) {
+    ResponseEntity<UserDTO> login(@RequestBody Login userLogin) {
         try {
-            boolean isValidLogin = loginService.validLogin(userLogin);
-            if (isValidLogin) {
-                return new ResponseEntity<>(HttpStatus.OK);
+            UserDTO loggedInUser = loginService.validLogin(userLogin);
+            if (Objects.nonNull(loggedInUser)) {
+                return ResponseEntity.ok(loggedInUser);
             }
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (UserException | PasswordException e) {
@@ -43,11 +45,11 @@ public class EntryController {
     }
 
     @PostMapping("/signup")
-    ResponseEntity<HttpStatus> signup(@RequestBody User user) {
+    ResponseEntity<UserDTO> signup(@RequestBody User user) {
         try {
-            boolean isValidSignUp = loginService.signUpUser(user);
-            if (isValidSignUp) {
-                return new ResponseEntity<>(HttpStatus.CREATED);
+            UserDTO signedUpUser = loginService.signUpUser(user);
+            if (Objects.nonNull(signedUpUser)) {
+                return ResponseEntity.ok(signedUpUser);
             }
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (UserException e) {
